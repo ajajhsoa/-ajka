@@ -1,0 +1,46 @@
+python
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+import random
+
+# 方言开头
+speakers = [
+ "东北老铁怒吼：", "北京大爷阴阳怪气：", "四川大哥开喷：", "广东阿叔怒斥：", "陕西老表嘲笑：",
+ "福建大婶叨叨：", "上海人毒舌：", "湖南大佬阴阳怪气地说：", "广西阿哥笑着说：", "山东大汉怒道："
+]
+
+# 毒辣狠毒文案
+nasty_insults = [
+ "你长得像塑料袋，还满地飞！", "你全家智商加起来都不如我家狗聪明！",
+ "你那张脸我拿来当马桶都嫌脏！", "脑子不在线，就别出来吓人！",
+ "活得像个 bug，删了重装也没救！", "你活着是对地球的惩罚！"
+]
+
+# 正常文案
+normal_insults = [
+ "你是不是小时候掉过地上被人捡错了？", "脑子进水还不修一下？",
+ "你的智商让我对人类产生怀疑。", "你要是闭嘴，全世界都会安静点。",
+ "别装了，你那点德行骗不了人。"
+]
+
+def generate_insult():
+ speaker = random.choice(speakers)
+ insult = random.choice(nasty_insults + normal_insults)
+ return speaker + insult
+
+# 处理 /start 指令
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+ await update.message.reply_text("欢迎使用【全国方言骂人文案机器人】！\n发送任意内容，我就骂回去。")
+
+# 处理普通消息
+async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
+ await update.message.reply_text(generate_insult())
+
+# 主函数
+if __name__ == '__main__':
+ app = ApplicationBuilder().token("7620375564:AAEhX2kFGFMH31pZk0u4Vm3u7HzhMnk1d2k").build()
+ app.add_handler(CommandHandler("start", start))
+ app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply))
+
+ print("机器人运行中...")
+ app.run_polling()
